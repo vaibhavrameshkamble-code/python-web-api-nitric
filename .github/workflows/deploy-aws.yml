@@ -85,12 +85,7 @@ jobs:
         run: |
           aws sts get-caller-identity
       
-      # Step 8: Build the application
-      - name: Build application
-        run: |
-          nitric build --ci
-      
-      # Step 9: Deploy to AWS
+      # Step 8: Deploy to AWS
       - name: Deploy to AWS
         id: deploy
         run: |
@@ -105,7 +100,7 @@ jobs:
           # Adjust based on actual Nitric output format
           echo "Deployment completed successfully"
       
-      # Step 10: Run smoke tests (optional)
+      # Step 9: Run smoke tests (optional)
       - name: Run smoke tests
         run: |
           # Wait for API to be ready
@@ -121,7 +116,7 @@ jobs:
           
           echo "Smoke tests passed"
       
-      # Step 11: Notify on success (optional)
+      # Step 10: Notify on success (optional)
       - name: Deployment success notification
         if: success()
         run: |
@@ -129,7 +124,7 @@ jobs:
           echo "Stack: ${{ github.event.inputs.stack_name || env.STACK_NAME }}"
           echo "Region: ${{ env.AWS_REGION }}"
       
-      # Step 12: Notify on failure (optional)
+      # Step 11: Notify on failure (optional)
       - name: Deployment failure notification
         if: failure()
         run: |
