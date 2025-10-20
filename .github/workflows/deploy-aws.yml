@@ -93,7 +93,7 @@ jobs:
           STACK="${{ github.event.inputs.stack_name || env.STACK_NAME }}"
           
           # Deploy with Nitric
-          nitric up --ci -s "$STACK" -f nitric.aws.yaml
+          nitric up -s aws --ci
           
           # Extract and save the API URL (optional)
           # This assumes Nitric outputs the API URL
