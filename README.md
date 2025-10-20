@@ -118,7 +118,32 @@ curl -X DELETE http://localhost:4001/tasks/{task-id}
 
 ## ☁️ Deploying to AWS
 
-### Prerequisites for AWS Deployment
+### Option 1: Automated Deployment with GitHub Actions (Recommended)
+
+This repository includes a pre-configured GitHub Actions workflow for automated AWS deployment.
+
+**Quick Setup:**
+
+1. **Add AWS credentials to GitHub Secrets**:
+   - Go to your repository **Settings** → **Secrets and variables** → **Actions**
+   - Add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+
+2. **Push to main branch**:
+   ```bash
+   git push origin main
+   ```
+   
+   The deployment will start automatically!
+
+3. **Or trigger manually**:
+   - Go to **Actions** tab → **Deploy to AWS** workflow
+   - Click **Run workflow**
+
+📚 **[See detailed setup guide →](AWS_DEPLOYMENT_SETUP.md)**
+
+### Option 2: Manual Deployment (CLI)
+
+#### Prerequisites for Manual Deployment
 
 1. **AWS Account**: You need an active AWS account
 2. **AWS CLI**: [Install AWS CLI](https://aws.amazon.com/cli/)
@@ -127,7 +152,7 @@ curl -X DELETE http://localhost:4001/tasks/{task-id}
    aws configure
    ```
 
-### Deployment Steps
+#### Manual Deployment Steps
 
 1. **Build your application**:
    ```bash
@@ -136,52 +161,54 @@ curl -X DELETE http://localhost:4001/tasks/{task-id}
 
 2. **Deploy to AWS**:
    ```bash
-   nitric up
+   nitric up -s python-web-api-dev -f nitric.aws.yaml
    ```
 
-3. **Follow the prompts**:
-   - Select `aws` as your cloud provider
-   - Choose your AWS region (e.g., `us-east-1`)
-   - Provide a stack name (e.g., `python-web-api-dev`)
-
-4. **Wait for deployment**: Nitric will provision all necessary AWS resources:
+3. **Wait for deployment**: Nitric will provision all necessary AWS resources:
    - API Gateway
    - Lambda functions
    - DynamoDB tables (for KV store)
    - IAM roles and policies
    - CloudWatch logs
 
-5. **Access your deployed API**: Once deployment is complete, Nitric will output the API URL.
+4. **Access your deployed API**: Once deployment is complete, Nitric will output the API URL.
 
-### Update Deployment
+#### Update Deployment
 
 To deploy updates to your application:
 
 ```bash
-nitric up
+nitric up -s python-web-api-dev -f nitric.aws.yaml
 ```
 
-### Remove Deployment
+#### Remove Deployment
 
 To tear down the AWS resources:
 
 ```bash
-nitric down
+nitric down -s python-web-api-dev
 ```
 
 ## 📁 Project Structure
 
 ```
 python-web-api-nitric/
+├── .github/
+│   └── workflows/
+│       └── deploy-aws.yml         # GitHub Actions deployment workflow
 ├── services/
-│   └── api.py              # Main API implementation
-├── .gitignore              # Git ignore rules
-├── .python-version         # Python version specification
-├── nitric.yaml             # Nitric configuration
-├── pyproject.toml          # Python project configuration
-├── python.dockerfile       # Docker configuration for deployment
+│   └── api.py                     # Main API implementation
+├── .gitignore                     # Git ignore rules
+├── .python-version                # Python version specification
+├── AWS_DEPLOYMENT_SETUP.md        # Detailed AWS deployment guide
+├── DEPLOYMENT.md                  # General deployment documentation
+├── nitric.yaml                    # Nitric project configuration
+├── nitric.aws.yaml                # AWS stack configuration
+├── pyproject.toml                 # Python project configuration
+├── python.dockerfile              # Docker configuration for deployment
 ├── python.dockerfile.dockerignore
-└── README.md               # This file
+├── README.md                      # This file
+└── requirements.txt               # Python dependencies
 ```
 
 ## 🔑 Key Concepts
