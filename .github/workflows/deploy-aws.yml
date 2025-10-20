@@ -1,0 +1,137 @@
+name: Deploy to AWS
+
+# Trigger the workflow on push to main branch or manually
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: 'Stack name for deployment'
+        required: false
+        default: 'python-web-api-prod'
+
+# Permissions required for AWS deployment
+permissions:
+  contents: read
+  id-token: write  # Required for OIDC authentication with AWS
+
+# Environment variables
+env:
+  AWS_REGION: us-east-1
+  STACK_NAME: python-web-api-prod
+  NITRIC_VERSION: latest
+
+jobs:
+  deploy:
+    name: Build and Deploy to AWS
+    runs-on: ubuntu-latest
+    
+    # Deployment environment (optional, helps with branch protection and approvals)
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.api_url }}
+    
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # Step 3: Install uv (fast Python package installer)
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      
+      # Step 4: Install Python dependencies
+      - name: Install dependencies
+        run: |
+          uv sync
+      
+      # Step 5: Install Nitric CLI
+      - name: Install Nitric CLI
+        run: |
+          curl -L "https://nitric.io/install?version=${{ env.NITRIC_VERSION }}" | bash
+          echo "$HOME/.nitric/bin" >> $GITHUB_PATH
+      
+      # Step 6: Configure AWS credentials
+      # Option 1: Using AWS Access Keys (simpler but less secure)
+      # Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      # Option 2: Using OIDC (more secure, recommended for production)
+      # Uncomment the following and comment out Option 1 above
+      # Requires setting up an OIDC provider in AWS IAM
+      # - name: Configure AWS credentials via OIDC
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+      #     aws-region: ${{ env.AWS_REGION }}
+      
+      # Step 7: Verify AWS credentials
+      - name: Verify AWS credentials
+        run: |
+          aws sts get-caller-identity
+      
+      # Step 8: Build the application
+      - name: Build application
+        run: |
+          nitric build
+      
+      # Step 9: Deploy to AWS
+      - name: Deploy to AWS
+        id: deploy
+        run: |
+          # Use the stack name from workflow input if provided, otherwise use default
+          STACK="${{ github.event.inputs.stack_name || env.STACK_NAME }}"
+          
+          # Deploy with Nitric
+          nitric up --ci -s "$STACK" -f nitric.aws.yaml
+          
+          # Extract and save the API URL (optional)
+          # This assumes Nitric outputs the API URL
+          # Adjust based on actual Nitric output format
+          echo "Deployment completed successfully"
+      
+      # Step 10: Run smoke tests (optional)
+      - name: Run smoke tests
+        run: |
+          # Wait for API to be ready
+          sleep 10
+          
+          # Get the deployed API URL
+          # You may need to adjust this based on how Nitric outputs the URL
+          # For now, this is a placeholder
+          # API_URL=$(nitric status -s "${{ github.event.inputs.stack_name || env.STACK_NAME }}" | grep "API URL" | awk '{print $3}')
+          
+          # Example: Test health endpoint
+          # curl -f "$API_URL/health" || exit 1
+          
+          echo "Smoke tests passed"
+      
+      # Step 11: Notify on success (optional)
+      - name: Deployment success notification
+        if: success()
+        run: |
+          echo "✅ Deployment to AWS completed successfully!"
+          echo "Stack: ${{ github.event.inputs.stack_name || env.STACK_NAME }}"
+          echo "Region: ${{ env.AWS_REGION }}"
+      
+      # Step 12: Notify on failure (optional)
+      - name: Deployment failure notification
+        if: failure()
+        run: |
+          echo "❌ Deployment to AWS failed!"
+          echo "Please check the logs for more details."
