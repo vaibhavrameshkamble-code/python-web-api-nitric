@@ -43,9 +43,9 @@ uv sync
 pip install -r requirements.txt
 ```
 
-### 3. Build the Application
+### 3. Build the Application (Optional)
 
-Build your application for deployment:
+You can optionally build your application before deployment:
 
 ```bash
 nitric build
@@ -55,6 +55,8 @@ This will:
 - Compile your application
 - Build Docker images
 - Prepare deployment artifacts
+
+**Note:** This step is optional because `nitric up` automatically builds the application as part of the deployment process.
 
 ### 4. Deploy to AWS
 
@@ -125,7 +127,14 @@ nitric status
 After making code changes:
 
 ```bash
-# Build new changes
+# Deploy updates (build is handled automatically)
+nitric up
+```
+
+Alternatively, if you want to build and test locally first:
+
+```bash
+# Build new changes (optional)
 nitric build
 
 # Deploy updates
