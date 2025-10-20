@@ -110,6 +110,8 @@ jobs:
           # This assumes Nitric outputs the API URL
           # Adjust based on actual Nitric output format
           echo "Deployment completed successfully"
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ""          
       
       # Step 9: Run smoke tests (optional)
       - name: Run smoke tests
