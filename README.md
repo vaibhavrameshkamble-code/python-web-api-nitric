@@ -17,11 +17,26 @@ A production-ready Python REST API example built with the [Nitric](https://nitri
 |--------|----------|-------------|
 | GET | `/` | API information and available endpoints |
 | GET | `/health` | Health check endpoint |
+| GET | `/docs` | **Swagger UI - Interactive API documentation** |
+| GET | `/swagger.json` | OpenAPI 3.0 specification (JSON) |
 | GET | `/tasks` | Get all tasks |
 | GET | `/tasks/:id` | Get a specific task by ID |
 | POST | `/tasks` | Create a new task |
 | PUT | `/tasks/:id` | Update a task |
 | DELETE | `/tasks/:id` | Delete a task |
+
+### 📖 API Documentation
+
+This API includes **Swagger UI** for interactive API documentation:
+
+- **Swagger UI**: Visit `http://localhost:4001/docs` when running locally
+- **OpenAPI Spec**: Available at `http://localhost:4001/swagger.json`
+
+The Swagger UI provides:
+- Interactive API exploration
+- Try-it-out functionality for all endpoints
+- Complete request/response schemas
+- Example payloads for each endpoint
 
 ## 🛠️ Prerequisites
 
@@ -65,6 +80,21 @@ nitric start
 The API will be available at `http://localhost:4001`
 
 You'll see output showing your services connecting. The development server includes hot-reload, so changes to your code will automatically restart the service.
+
+### 📖 Accessing API Documentation
+
+Once the server is running, you can access the interactive Swagger documentation:
+
+```bash
+# Open in your browser
+http://localhost:4001/docs
+```
+
+The Swagger UI allows you to:
+- Explore all available endpoints
+- View request/response schemas
+- Test API endpoints directly from the browser
+- Download the OpenAPI specification
 
 ## 🧪 Testing the API
 
