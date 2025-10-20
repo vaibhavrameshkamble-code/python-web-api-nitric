@@ -283,6 +283,7 @@ Nitric.run()
 - [Nitric Python Guide](https://nitric.io/docs/guides?langs=python)
 - [Nitric Examples](https://github.com/nitrictech/examples)
 - [Join Nitric Discord](https://nitric.io/chat)
+- **[API Documentation Guide](SWAGGER.md)** - Complete guide to using the Swagger UI
 
 ## 🤝 Contributing
 
