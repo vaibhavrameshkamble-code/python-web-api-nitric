@@ -1,0 +1,10 @@
+# Python Web API with Nitric - Dependencies
+# 
+# Install with: pip install -r requirements.txt
+# or with uv: uv sync
+
+nitric>=1.2.3
+betterproto>=2.0.0b6
+
+# Development dependencies
+watchdog>=5.0.3
