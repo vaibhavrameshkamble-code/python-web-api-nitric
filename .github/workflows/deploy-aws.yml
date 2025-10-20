@@ -88,7 +88,7 @@ jobs:
       # Step 8: Build the application
       - name: Build application
         run: |
-          nitric build
+          nitric build --ci
       
       # Step 9: Deploy to AWS
       - name: Deploy to AWS

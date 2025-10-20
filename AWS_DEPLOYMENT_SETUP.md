@@ -182,7 +182,7 @@ This GitHub Actions workflow automates the deployment process:
 5. Install Nitric CLI
 6. Configure AWS credentials
 7. Verify AWS access
-8. Build the application
+8. Build the application (using `nitric build --ci` for non-interactive mode)
 9. Deploy to AWS
 10. Run smoke tests
 11. Send notifications
@@ -288,8 +288,11 @@ Test your configuration locally:
 # Install dependencies
 uv sync
 
-# Build the application
+# Build the application (interactive mode)
 nitric build
+
+# Or build in CI mode (non-interactive, useful for scripts)
+nitric build --ci
 
 # Deploy to AWS (will prompt for confirmation)
 nitric up -s my-test-stack -f nitric.aws.yaml
@@ -458,6 +461,14 @@ workflow_dispatch:
 - Check Nitric version availability
 - Try pinning to a specific version instead of `latest`
 - Review Nitric installation logs in GitHub Actions
+
+### Issue: Nitric Build Fails with "could not open a new TTY" Error
+
+**Solution:**
+- This error occurs when Nitric tries to open an interactive terminal in a CI environment
+- Use the `--ci` flag with the nitric build command: `nitric build --ci`
+- The `--ci` flag runs Nitric in non-interactive mode, which is required for CI/CD pipelines
+- This is already configured in the workflow file
 
 ### Issue: Deployment Timeout
 
